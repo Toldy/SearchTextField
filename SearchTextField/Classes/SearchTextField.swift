@@ -300,14 +300,14 @@ open class SearchTextField: UITextField {
                 tableViewFrame.origin.x += 2 + tableXOffset
                 tableViewFrame.origin.y += frame.size.height + 2 + tableYOffset
                 UIView.animate(withDuration: 0.2, animations: { [weak self] in
-                    self?.tableView?.frame = tableViewFrame
+                    self?.tableView?.frame = tableViewFrame.handleExtremeValues()
                 })
                 
                 var shadowFrame = CGRect(x: 0, y: 0, width: frame.size.width - 6, height: 1)
                 shadowFrame.origin = self.convert(shadowFrame.origin, to: nil)
                 shadowFrame.origin.x += 3
                 shadowFrame.origin.y = tableView.frame.origin.y
-                shadowView!.frame = shadowFrame
+                shadowView!.frame = shadowFrame.handleExtremeValues()
             } else {
                 let tableHeight = min((tableView.contentSize.height), (UIScreen.main.bounds.size.height - frame.origin.y - theme.cellHeight))
                 UIView.animate(withDuration: 0.2, animations: { [weak self] in
@@ -667,6 +667,23 @@ open class SearchTextFieldItem {
 }
 
 public typealias SearchTextFieldItemHandler = (_ filteredResults: [SearchTextFieldItem], _ index: Int) -> Void
+
+////////////////////////////////////////////////////////////////////////
+// CGRect Extension
+
+private extension CGRect {
+
+    // Returns .zero if Self contains NaN or infinity
+    func handleExtremeValues() -> CGRect {
+        if origin.x.isFinite
+            && origin.y.isFinite
+            && height.isFinite
+            && width.isFinite {
+            return self
+        }
+        return .zero
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////
 // Suggestions List Direction
